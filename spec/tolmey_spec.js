@@ -1,5 +1,6 @@
-var Tolmey = require('tolmey'),
-  t = new Tolmey();
+var Tolmey = require('tolmey')
+  , t = Tolmey.create()
+  ;
 
 describe('Tolmey', function () {
   describe('distanceInMeters', function () {
