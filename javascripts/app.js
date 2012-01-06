@@ -11,7 +11,7 @@
     , EventEmitter = require('events.node').EventEmitter
     , imageEmitter = new EventEmitter()
     , progressBar
-    , dropshareURL = "http://dropshare.coolaj86.info"
+    , dropshareURL = "http://dropb.in"
     ;
 
   imageEmitter.on('image_downloaded', imageWasDownloaded);
