@@ -4,17 +4,12 @@
 (function() {
   "use strict";
 
-  //Add the toRad method to the Number object
-  if (typeof(Number.prototype.toRad) === "undefined") {
-    Number.prototype.toRad = function () {
-      return this * (Math.PI / 180);
-    };
+  function toRad(n) {
+    return n * (Math.PI / 180);
   }
 
-  if (typeof(Number.prototype.toDeg) === "undefined") {
-    Number.prototype.toDeg = function () {
-      return this * (180 / Math.PI);
-    };
+  function toDeg(n) {
+    return n * (180 / Math.PI);
   }
 
   //Add math trig functions
@@ -47,6 +42,7 @@
     }
 
     TILESIZE = opts.tileSize;
+
     function modGPSAdd(x, y) {
       var res = x + y;
       if (res > 180) {
@@ -63,10 +59,10 @@
     };
 
     function haversineFunction(lat_start, long_start, lat_end, long_end) {
-      var dLat = (lat_end - lat_start).toRad()
-        , dLon = (long_end - long_start).toRad()
-        , lat1 = lat_start.toRad()
-        , lat2 = lat_end.toRad()
+      var dLat = toRad(lat_end - lat_start)
+        , dLon = toRad(long_end - long_start)
+        , lat1 = toRad(lat_start)
+        , lat2 = toRad(lat_end)
         ;
 
       var a = Math.pow(Math.sin(dLat/2), 2) + Math.cos(lat1)*Math.cos(lat2)*Math.pow(Math.sin(dLon/2),2);
@@ -130,9 +126,9 @@
           , ret
           ;
 
-        lat = lat.toRad();
-        lon = lon.toRad();
-        brng = brng.toRad();
+        lat = toRad(lat);
+        lon = toRad(lon);
+        brng = toRad(brng);
 
         lat2 = Math.asin(Math.sin(lat) * Math.cos(d/R) +
                          Math.cos(lat) * Math.sin(d/R) * Math.cos(brng));
@@ -143,8 +139,8 @@
         lon2 = (lon2 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
 
         ret = {
-            latitude: lat2.toDeg()
-          , longitude: lon2.toDeg()
+            latitude: toDeg(lat2)
+          , longitude: toDeg(lon2)
         };
         return ret;
       },
@@ -157,8 +153,8 @@
 
 
       getMercatorFromGPS: function (lat, lon, zoom) {
-        var pixel_x = this.lonToXPixels(lon.toRad(), zoom);
-        var pixel_y = this.latToYPixels(lat.toRad(), zoom);
+        var pixel_x = this.lonToXPixels(toRad(lon), zoom);
+        var pixel_y = this.latToYPixels(toRad(lat), zoom);
         var max_pixel = Math.pow(2, zoom) * TILESIZE;
 
         if (pixel_x < 0) {
@@ -257,12 +253,12 @@
           , dLon13
           ;
 
-        lat1 = lat1.toRad();
-        lon1 = lon1.toRad();
-        lat2 = lat2.toRad();
-        lon2 = lon2.toRad();
-        brng1 = brng1.toRad();
-        brng2 = brng2.toRad();
+        lat1 = toRad(lat1);
+        lon1 = toRad(lon1);
+        lat2 = toRad(lat2);
+        lon2 = toRad(lon2);
+        brng1 = toRad(brng1);
+        brng2 = toRad(brng2);
 
         dLat = lat2-lat1, dLon = lon2-lon1;
 
@@ -314,14 +310,14 @@
         lon3 = lon1+dLon13;
         lon3 = (lon3+3*Math.PI) % (2*Math.PI) - Math.PI;  // normalise to -180..+180º
 
-        return { latitude: lat3.toDeg(), longitude: lon3.toDeg() };
+        return { latitude: toDeg(lat3), longitude: toDeg(lon3) };
       },
 
     };
   }
 
   function create() {
-    return new Tolmey();
+    return Tolmey();
   }
 
   module.exports.create = create;
