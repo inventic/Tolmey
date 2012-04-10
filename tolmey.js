@@ -77,6 +77,30 @@
       // The array is indexed by zoom level, so urls[15] is all the URLs for tiles that cover the area
       // in zoom level 15, ect.
       getTileURLs: function (opts) {
+        var coords = this.getTileCoords(opts)
+          , mappingSystem = "openstreetmap"
+          , urls = {}
+          ;
+
+        if (opts.hasOwnProperty("mappingSystem")) {
+          mappingSystem = opts.mappingSystem;
+        }
+
+        Object.keys(coords).forEach(function (zoom) {
+          var coord = coords[zoom]
+            ;
+
+          urls[zoom] = urls[zoom] || [];
+          urls[zoom].push({
+              url: this.getTileURL(mappingSystem, coord.x, coord.y, coord.zoom)
+            , coords: coord
+          });
+        });
+
+        return urls;
+      },
+
+      getTileCoords: function (opts) {
         var north = this.translate(opts.lat, opts.lon, opts.radius, 0)
           , south = this.translate(opts.lat, opts.lon, opts.radius, 180)
           , west = this.translate(opts.lat, opts.lon, opts.radius, 270)
@@ -84,7 +108,6 @@
           , urls = []
           , origin
           , i, j, z, y0, y1, x0, x1
-          , mappingSystem = "openstreetmap"
           , zoom = 12
           , maxZoom = 20
           ;
@@ -95,27 +118,29 @@
         if (opts.hasOwnProperty("maxZoom")) {
           maxZoom = opts.maxZoom;
         }
-        if (opts.hasOwnProperty("mappingSystem")) {
-          mappingSystem = opts.mappingSystem;
-        }
 
         for (i = 0; i <= maxZoom; i++) {
           urls[i] = [];
         }
 
 
-        for (zoom; zoom <= maxZoom; zoom++) {
+        for (zoom; zoom <= maxZoom; zoom += 1) {
           y0 = this.getMercatorFromGPS(north.latitude, north.longitude, zoom);
           y1 = this.getMercatorFromGPS(south.latitude, south.longitude, zoom);
           x0 = this.getMercatorFromGPS(west.latitude, west.longitude, zoom);
           x1 = this.getMercatorFromGPS(east.latitude, east.longitude, zoom);
 
-          for (i = x0.x; i <= x1.x; i++) {
-            for (j = y0.y; j <= y1.y; j++) {
-              urls[zoom].push({ url: this.getTileURL(mappingSystem, i, j, zoom), coords: { zoom: zoom, x: i, y: j }});
+          for (i = x0.x; i <= x1.x; i += 1) {
+            for (j = y0.y; j <= y1.y; j += 1) {
+              urls[zoom].push({
+                  zoom: zoom
+                , x: i
+                , y: j
+              });
             }
           }
         }
+
         return urls;
       },
 
