@@ -4,6 +4,9 @@
 (function() {
   "use strict";
 
+  var strategies = require('./strategies')
+    ;
+
   function toRad(n) {
     return n * (Math.PI / 180);
   }
@@ -199,6 +202,7 @@
       },
 
       getTileURL: function (mapping_system, x, y, zoom) {
+        console.warn("[deprecated]: getTileURL has been replaced by 'strategies'");
         if (mapping_system === "openstreetmap") {
           return "http://tile.openstreetmap.org/" +
           zoom + "/" + x + "/" +
@@ -254,6 +258,21 @@
         }
         return (Math.cos(latitude * (Math.PI / 180)) * 2 * Math.PI * RADIUS_OF_EARTH_IN_METERS) /
           (TILESIZE * this.getCircumferenceInTiles(zoom_level));
+      },
+
+      // --funroll-loops
+      getFlatTileCoords: function (coords) {
+        var tilez = this.getTileCoords(coords)
+          , tiles = []
+          ;
+
+        tilez.forEach(function (tiless) {
+          tiless.forEach(function (tile) {
+            tiles.push(tile);
+          });
+        });
+
+        return tiles;
       },
 
       // Taken from http://www.movable-type.co.uk/scripts/latlong.html.
@@ -338,6 +357,7 @@
         return { latitude: toDeg(lat3), longitude: toDeg(lon3) };
       },
 
+      strategies: strategies
     };
   }
 
