@@ -1,3 +1,4 @@
+/*jshint node:true laxcomma:true laxbreak:true*/
 // (C) Jamison Dance (jergason) 2011
 // MIT License
 
@@ -6,6 +7,11 @@
 
   var strategies = require('./strategies')
     ;
+
+  // for kicks
+  Object.keys(strategies).forEach(function (key) {
+    strategies[key.toLowerCase()] = strategies[key];
+  });
 
   function toRad(n) {
     return n * (Math.PI / 180);
@@ -36,12 +42,12 @@
 
     RADIUS_OF_EARTH_IN_METERS = 6378100;
     if (!opts) {
-      opts = {}
+      opts = {};
     }
 
     if (!opts.tileSize) {
       //Default tile size in pixels
-      opts.tileSize = 256
+      opts.tileSize = 256;
     }
 
     TILESIZE = opts.tileSize;
@@ -59,7 +65,7 @@
         }
       }
       return res;
-    };
+    }
 
     function haversineFunction(lat_start, long_start, lat_end, long_end) {
       var dLat = toRad(lat_end - lat_start)
@@ -71,7 +77,7 @@
       var a = Math.pow(Math.sin(dLat/2), 2) + Math.cos(lat1)*Math.cos(lat2)*Math.pow(Math.sin(dLon/2),2);
       var centralAngle = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       return centralAngle;
-    };
+    }
 
 
     return {
@@ -202,16 +208,17 @@
       },
 
       getTileURL: function (mapping_system, x, y, zoom) {
+        var strategy = strategies[mapping_system.toLowerCase()]
+          ;
+
         console.warn("[deprecated]: getTileURL has been replaced by 'strategies'");
-        if (mapping_system === "openstreetmap") {
-          return "http://tile.openstreetmap.org/" +
-          zoom + "/" + x + "/" +
-            y + ".png";
-        }
-        else if (mapping_system === "google") {
-          return "http://khm0.google.com/kh/v=95&x=" + x +
-           "&y=" + y + "&z=" + zoom + "&s=Gali";
-        }
+
+        return strategy({
+            x: x
+          , y: y
+          , zoom: zoom
+        }, 0); // 0 because caching is more important than load balancing for this case
+        // TODO download first, then show
       },
 
       // Takes lat in radians and a zoom, and returns a y pixel

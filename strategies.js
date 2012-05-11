@@ -1,6 +1,31 @@
+/*jshint node:true laxcomma:true laxbreak:true*/
 (function () {
   var strategies = exports
     ;
+
+  strategies.openStreetMap = (function () {
+    var alphabet = [
+            "a"
+          , "b"
+          , "c"
+        ]
+      ;
+
+    //      server                   zoom x(long) y(lat)
+    // http://b.tile.openstreetmap.org/13/4095/2722.png
+    return function (tile, i) {
+
+      return "http://" + alphabet[i % 3] + ".tile.openstreetmap.org"
+        + "/"
+        + tile.zoom
+        + "/"
+        + tile.x
+        + "/"
+        + tile.y
+        + ".png"
+        ;
+    };
+  }());
 
   strategies.google = (function () {
     var j = 0
@@ -84,7 +109,7 @@
         + y
         + "/256/jpg?lg=ENG&token=TrLJuXVK62IQk0vuXFzaig%3D%3D&requestid=yahoo.prod&app_id=eAdkWGYRoc4RfxVo0Z4B"
         ;
-    }
+    };
   }());
 
   strategies.nokia = (function () {
@@ -103,7 +128,7 @@
         + y
         + "/256/png8?token=fee2f2a877fd4a429f17207a57658582&appId=nokiaMaps"
         ;
-    }
+    };
   }());
 
 }());
